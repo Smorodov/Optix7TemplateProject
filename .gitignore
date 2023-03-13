@@ -7,5 +7,6 @@ bin
 *.autosave
 *.gz
 *.zip
+*.exe
 Session.vim
 *.swp

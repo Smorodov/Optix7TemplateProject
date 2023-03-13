@@ -42,6 +42,7 @@ if (WIN32)
 else()
   find_package(glfw3 REQUIRED)
 endif()
+
 include_directories(common)
 add_subdirectory(common/glfWindow EXCLUDE_FROM_ALL)
 
@@ -66,8 +67,15 @@ add_executable(${PROJECT_NAME}
   )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 set_target_properties( ${PROJECT_NAME}  PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+#attach devil library https://openil.sourceforge.net/download.php
+include_directories(common/3rdParty/DevIL/include)
+# copy libs
+file(COPY ${PROJECT_SOURCE_DIR}/common/3rdParty/DevIL/lib/x64/Release/ DESTINATION ${CMAKE_SOURCE_DIR}/build/Debug)
+file(COPY ${PROJECT_SOURCE_DIR}/common/3rdParty/DevIL/lib/x64/Release/ DESTINATION ${CMAKE_SOURCE_DIR}/build/Release)
+
 target_link_libraries(${PROJECT_NAME}
-gdt
+  gdt
   # optix dependencies, for rendering
   ${optix_LIBRARY}
   ${CUDA_LIBRARIES}
@@ -76,12 +84,15 @@ gdt
   glfWindow
   glfw
   ${OPENGL_gl_LIBRARY}
+  optimized ${CMAKE_BINARY_DIR}/Release/DevIL.lib
+  optimized ${CMAKE_BINARY_DIR}/Release/ILU.lib
+  optimized ${CMAKE_BINARY_DIR}/Release/ILUT.lib
+
+ debug ${CMAKE_BINARY_DIR}/Debug/DevIL.lib
+ debug ${CMAKE_BINARY_DIR}/Debug/ILU.lib
+ debug ${CMAKE_BINARY_DIR}/Debug/ILUT.lib
   )
 
 # set woeking directory and set startup project for MSVC
 set_target_properties( ${PROJECT_NAME} PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
-
-# copy model files to woeking directory
-#file(COPY ${PROJECT_SOURCE_DIR}/npz_model/01_MorphableModel.npz DESTINATION ${CMAKE_SOURCE_DIR}/build/Debug/model)
-#file(COPY ${PROJECT_SOURCE_DIR}/npz_model/01_MorphableModel.npz DESTINATION ${CMAKE_SOURCE_DIR}/build/Release/model)
