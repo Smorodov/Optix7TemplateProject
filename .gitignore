@@ -1,0 +1,11 @@
+*~
+.#*
+*#
+bin
+./build/*
+/vs2022/*
+*.autosave
+*.gz
+*.zip
+Session.vim
+*.swp
